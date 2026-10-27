@@ -1,0 +1,31 @@
+appId: vn.kiyo.vicoai
+productName: Vico AI
+copyright: Copyright © 2026 Vico AI
+
+directories:
+  output: dist
+  buildResources: build
+
+files:
+  - main.js
+  - preload.js
+  - package.json
+  - app/**/*
+  - providers/**/*
+  - local-ai/**/*
+  - build/icon.png
+
+asarUnpack:
+  - "**/*.node"
+  - "node_modules/@node-llama-cpp/**"
+
+win:
+  icon: build/icon.png
+  target:
+    - nsis
+
+nsis:
+  oneClick: true
+  perMachine: false
+  deleteAppDataOnUninstall: false
+  artifactName: VicoAI-Setup-${version}.${ext}

@@ -1,0 +1,17 @@
+# Node / Electron
+node_modules/
+dist/
+out/
+*.exe
+*.appx
+*.blockmap
+
+# Log & hệ điều hành
+*.log
+.DS_Store
+Thumbs.db
+
+# Môi trường & dữ liệu cục bộ
+.env
+.env.*
+desktop-settings.json

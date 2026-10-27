@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="vi" class="is-desktop">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; frame-src 'self' blob: app:; connect-src 'self' https: http:" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vico AI</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+  <meta name="theme-color" content="#5B3FE8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="vendor/katex/katex.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="desktop.css" />
+  <link rel="stylesheet" href="group-intro.css" />
+  <link rel="stylesheet" href="chat-intro.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar rail" id="sidebar">
+      <div class="rail-top">
+        <div class="rail-head">
+          <span class="rail-brand lbl"><svg class="vico-mark" viewBox="0 0 64 64" aria-hidden="true"><path class="vm-r" d="M50 15 32 49"/><path class="vm-l" d="M14 15 32 49"/><path class="vm-s" d="M32 3.7Q33 11.7 39 12.7Q33 13.7 32 21.7Q31 13.7 25 12.7Q31 11.7 32 3.7Z"/></svg>Vico AI</span>
+          <button class="rail-btn" id="toggleSidebar" title="Mở thanh bên" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M9.5 4v16"/></svg>
+          </button>
+        </div>
+        <button class="rail-btn new-btn" id="newChat" title="Phiên chat mới">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="lbl">Phiên chat mới</span>
+        </button>
+        <button class="rail-btn group-btn" id="groupBtn" title="Group AI (bản desktop)">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19.5c.8-3.3 3.2-5.2 6-5.2s5.2 1.9 6 5.2"/><circle cx="17" cy="9" r="2.6"/><path d="M15.6 14.4c2.6-.3 4.7 1.3 5.4 4.4"/></svg>
+          <span class="lbl">Group AI</span>
+          <span class="lbl badge-desk">Desktop</span>
+        </button>
+        <div class="pop-wrap project-wrap">
+          <button class="rail-btn" id="projectBtn" title="Dự án">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h3.6l2 2.2h7.4A2.5 2.5 0 0 1 21 9.7v7.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/></svg>
+          </button>
+          <div class="popover pop-top" id="projectPop">
+            <div class="pop-title">Dự án <button class="mini-add" id="addProjectInline" title="Tạo dự án mới"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+            <nav class="project-list" id="projectList"></nav>
+            <button class="pop-item pop-create" id="newProjectBtn">
+              <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Tạo dự án mới
+            </button>
+          </div>
+        </div>
+        <div class="pop-wrap history-wrap">
+          <button class="rail-btn" id="historyBtn" title="Lịch sử chat">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>
+          </button>
+          <div class="popover pop-top" id="historyPop">
+            <div class="pop-title">Lịch sử chat</div>
+            <input class="history-search" id="historySearch" type="search" placeholder="Tìm đoạn chat…" aria-label="Tìm đoạn chat" />
+            <nav class="history" id="history"></nav>
+            <div class="pop-empty" id="historyEmpty">Chưa có phiên chat nào</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <button class="rail-btn desk-btn" id="desktopBtn" title="Tải bản desktop">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M12 7v5M9.5 9.6 12 12l2.5-2.4"/></svg>
+          <span class="lbl">Tải bản desktop</span>
+        </button>
+        <div class="pop-wrap">
+          <button class="rail-btn" id="bellBtn" title="Thông báo">
+            <span class="ico-wrap">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+              <i class="dot" id="bellDot" hidden></i>
+            </span>
+            <span class="lbl">Thông báo</span>
+          </button>
+          <div class="popover" id="bellPop">
+            <div class="pop-title">Thông báo</div>
+            <button class="notif" data-open="desktop">
+              <span class="notif-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M12 7v5M9.5 9.6 12 12l2.5-2.4"/></svg></span>
+              <span class="notif-text"><b>Vico AI cho máy tính</b><small>Có Group AI, AI truy cập terminal và thư mục. Bấm để tải!</small></span>
+            </button>
+          </div>
+        </div>
+        <div class="pop-wrap">
+          <button class="rail-btn user-btn" id="avatarBtn" title="Tài khoản">
+            <span class="avatar-btn" id="avatarLetter"></span>
+            <span class="lbl" id="avatarName">Khách</span>
+          </button>
+          <div class="popover" id="avatarPop"></div>
+        </div>
+      </div>
+    </aside>
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn only-mobile" id="openSidebar" title="Menu">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="model-name">
+          <div class="pop-wrap mp-wrap" id="mpWrap">
+            <button class="mp-btn" id="mpBtn" aria-haspopup="listbox" title="Chọn model"><span id="mpName">Vico AI Lite 2.6</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="mp-menu" id="mpMenu" role="listbox"></div>
+          </div>
+          <span class="muted" id="modelLabel"></span>
+          <span class="project-chip" id="projectChip" hidden>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h3.6l2 2.2h7.4A2.5 2.5 0 0 1 21 9.7v7.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/></svg>
+            <span id="projectChipName"></span>
+            <button id="projectChipClose" title="Thoát dự án"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+          </span>
+        </div>
+        <div class="auth-area">
+          <div class="guest-actions" id="guestActions">
+            <button class="btn-ghost sm hide-xs" id="loginBtn">Đăng nhập</button>
+            <button class="btn-primary sm" id="signupBtn">Đăng ký</button>
+          </div>
+          <div class="pop-wrap credit-wrap" id="creditWrap" hidden>
+            <button class="credit-chip" id="creditChip" title="Credit của bạn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5l1.3 3.2 3.2 1.3-3.2 1.3L12 16.5l-1.3-3.2L7.5 12l3.2-1.3z" fill="currentColor" stroke="none"/></svg>
+              <span id="creditTotal">0</span>
+            </button>
+            <div class="popover credit-pop" id="creditPop">
+              <div class="credit-head"><span>Credit của bạn</span><b id="cpTotal">0</b></div>
+              <div class="credit-row">
+                <div class="credit-row-top"><span>Credit hằng ngày</span><b><span id="cpDaily">0</span> / <span id="cpDailyMax">0</span></b></div>
+                <div class="credit-bar"><i id="cpDailyBar"></i></div>
+                <small id="cpReset"></small>
+              </div>
+              <div class="credit-row">
+                <div class="credit-row-top"><span>Credit tặng khi đăng ký</span><b id="cpBonus">0</b></div>
+                <small>Không hết hạn · chỉ dùng khi đã hết credit ngày</small>
+              </div>
+              <button type="button" class="cp-more" data-open-settings="credit">Lịch sử credit · mã giới thiệu · gói của bạn</button>
+            </div>
+          </div>
+        </div>
+        <button class="icon-btn" id="themeToggle" title="Đổi giao diện sáng/tối">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </button>
+      </header>
+
+      <section class="chat" id="chat">
+        <div class="welcome" id="welcome">
+         <div class="view" id="homeView">
+          <div class="hero-grid">
+            <button class="card" id="buildCard">
+              <svg class="card-icon" viewBox="0 0 24 24" width="28" height="28"><path fill="#2f8cff" d="M14.6 2.6a1.5 1.5 0 0 1 2.1 0l4.7 4.7a1.5 1.5 0 0 1 0 2.1l-2.3 2.3a1.5 1.5 0 0 1-2.1 0l-.7-.7-9.6 9.6a2 2 0 0 1-2.8 0l-.6-.6a2 2 0 0 1 0-2.8l9.6-9.6-.7-.7a1.5 1.5 0 0 1 0-2.1z"/></svg>
+              <div class="card-title">Xây dựng <svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="card-sub">Website, ứng dụng và game</div>
+              <svg class="card-art" viewBox="0 0 200 160" fill="none" stroke="currentColor" stroke-width="1">
+                <path d="M0 20h200M0 60h200M0 100h200M0 140h200M20 0v160M60 0v160M100 0v160M140 0v160M180 0v160" opacity=".35"/>
+                <path d="M20 0l180 160M200 0L20 160" stroke-dasharray="4 4" opacity=".35"/>
+                <circle cx="110" cy="85" r="62" opacity=".7"/>
+                <circle cx="110" cy="85" r="62" fill="currentColor" fill-opacity=".06"/>
+                <circle cx="110" cy="85" r="34" fill="var(--card)" opacity=".9"/>
+                <circle cx="110" cy="85" r="34" opacity=".7"/>
+              </svg>
+            </button>
+
+            <button class="card card-feature" data-topic="slide">
+              <svg class="card-icon" viewBox="0 0 24 24" width="28" height="28"><circle cx="8" cy="9" r="5" fill="#f5a524"/><circle cx="16.5" cy="13" r="4" fill="#f59e0b" opacity=".85"/></svg>
+              <div class="card-title">Sáng tạo <svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="card-sub">Slide, hình ảnh và video</div>
+              <div class="card-art sheets"><i></i><i></i><i></i></div>
+            </button>
+
+            <button class="card card-file" id="openFile">
+              <span class="badge-soft">Tệp văn bản</span>
+              <svg class="folder" viewBox="0 0 120 100">
+                <path d="M8 18a6 6 0 0 1 6-6h28l10 10h54a6 6 0 0 1 6 6v8H8z" fill="var(--folder-back)"/>
+                <path d="M4 36a6 6 0 0 1 6-6h100a6 6 0 0 1 6 6l-5 52a6 6 0 0 1-6 5.5H15a6 6 0 0 1-6-5.5z" fill="var(--folder-front)" stroke="var(--folder-line)"/>
+              </svg>
+              <div class="card-title center">Bắt đầu từ tệp có sẵn</div>
+              <div class="card-sub center">Mở tệp trên máy để Vico AI đọc và xử lý</div>
+            </button>
+            <input type="file" id="fileInput" hidden accept=".txt,.md,.csv,.json,.html,.css,.js,.ts,.py,.java,.c,.cpp,.cs,.php,.xml,.sql,.log" />
+          </div>
+
+          <div class="examples">
+            <button class="example" data-topic="writing" data-prompt="Viết kịch bản cho một video anime ngắn khoảng 1 phút về cô gái đạp xe trên con dốc lúc hoàng hôn">
+              <div class="thumb"><img src="img/video.jpg" alt="Con đường lúc hoàng hôn" loading="lazy" />
+                <span class="tag"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg>Video</span>
+              </div>
+              <p>Viết kịch bản video anime ngắn</p>
+            </button>
+            <button class="example" data-topic="app" data-prompt="Làm cho tôi một ứng dụng quản lý chi tiêu cá nhân có thống kê thu chi theo tháng">
+              <div class="thumb app-thumb">
+                <div class="mini">
+                  <div class="mini-side"><i></i><i></i><i></i><i></i></div>
+                  <div class="mini-main">
+                    <div class="mini-h">Tiền bạc, trong tầm tay.</div>
+                    <div class="mini-stats"><b>12,6tr</b><b>5,2tr</b><b>2,6tr</b><b>1,5tr</b></div>
+                    <div class="mini-row">
+                      <svg class="mini-chart" viewBox="0 0 120 50" preserveAspectRatio="none"><path d="M0 40 C15 34 22 22 35 26 S55 36 68 22 S92 10 105 18 L120 14 V50 H0z" fill="rgba(52,211,153,.18)"/><path d="M0 40 C15 34 22 22 35 26 S55 36 68 22 S92 10 105 18 L120 14" fill="none" stroke="#34d399" stroke-width="1.5"/></svg>
+                      <div class="mini-donut"></div>
+                    </div>
+                  </div>
+                </div>
+                <span class="tag"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18h2"/></svg>Ứng dụng</span>
+              </div>
+              <p>Làm app quản lý chi tiêu cá nhân</p>
+            </button>
+            <button class="example" data-topic="general" data-prompt="Lên ý tưởng concept art cho một game giả tưởng: thế giới, nhân vật chính, bảng màu và mô tả chi tiết để vẽ">
+              <div class="thumb"><img src="img/image.jpg" alt="Lâu đài trong sương" loading="lazy" />
+                <span class="tag"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>Hình ảnh</span>
+              </div>
+              <p>Ý tưởng concept art cho game giả tưởng</p>
+            </button>
+          </div>
+         </div>
+         <div class="view" id="buildView" hidden>
+          <div class="view-head">
+            <button class="back-btn" id="backHome" title="Quay lại">
+              <svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div>
+              <h2>Xây dựng</h2>
+              <p>Chọn loại sản phẩm bạn muốn Vico AI làm cùng</p>
+            </div>
+          </div>
+
+          <div class="build-grid">
+            <!-- Website -->
+            <button class="build-item" data-topic="web" data-prompt="Tạo cho tôi một website ">
+              <div class="bthumb">
+                <div class="win w-web">
+                  <div class="bar"><i></i><i></i><i></i><span></span></div>
+                  <div class="w-web-body">
+                    <b>Trang giới thiệu</b>
+                    <span class="ln"></span>
+                    <span class="pill"></span>
+                    <div class="hero-img"></div>
+                  </div>
+                </div>
+              </div>
+              <strong>Website</strong><small>Landing page, giới thiệu, bán hàng</small>
+            </button>
+
+            <!-- Mobile -->
+            <button class="build-item" data-topic="app" data-prompt="Làm cho tôi một ứng dụng di động ">
+              <div class="bthumb">
+                <div class="phone">
+                  <div class="ph-brand">CAFÉ VICO</div>
+                  <div class="ph-chips"><i class="on"></i><i></i><i></i><i></i></div>
+                  <div class="ph-row"><i style="background:#c08457"></i><span></span><em>45k</em></div>
+                  <div class="ph-row"><i style="background:#8b5e3c"></i><span></span><em>39k</em></div>
+                  <div class="ph-row"><i style="background:#d9a066"></i><span></span><em>52k</em></div>
+                </div>
+              </div>
+              <strong>Ứng dụng di động</strong><small>Android, iOS</small>
+            </button>
+
+            <!-- Desktop -->
+            <button class="build-item" data-topic="app" data-prompt="Làm cho tôi một phần mềm máy tính ">
+              <div class="bthumb">
+                <div class="desk">
+                  <div class="desk-win">
+                    <div class="desk-side"><i></i><i></i><i></i></div>
+                    <div class="desk-main"><div class="timer">25:00</div><span class="pill blue"></span></div>
+                  </div>
+                  <div class="dock"><i></i><i></i><i></i><i></i><i></i></div>
+                </div>
+              </div>
+              <strong>Phần mềm máy tính</strong><small>Windows, macOS</small>
+            </button>
+
+            <!-- Chatbot -->
+            <button class="build-item" data-topic="code" data-prompt="Xây dựng một chatbot ">
+              <div class="bthumb">
+                <div class="win w-chat">
+                  <div class="chat-side"><i></i><i></i><i></i></div>
+                  <div class="chat-main">
+                    <div class="cb user"></div>
+                    <div class="cb bot"><span></span><span class="short"></span></div>
+                    <div class="chat-input"><i></i></div>
+                  </div>
+                </div>
+              </div>
+              <strong>Chatbot</strong><small>Trợ lý AI, bot Messenger, Zalo</small>
+            </button>
+
+            <!-- Dashboard -->
+            <button class="build-item" data-topic="web" data-prompt="Tạo một trang dashboard quản trị ">
+              <div class="bthumb">
+                <div class="win w-dash">
+                  <div class="dash-stats"><i></i><i></i><i></i></div>
+                  <div class="dash-bars"><i style="height:40%"></i><i style="height:65%"></i><i style="height:50%"></i><i style="height:85%"></i><i style="height:60%"></i><i style="height:95%"></i><i style="height:72%"></i></div>
+                </div>
+              </div>
+              <strong>Dashboard quản trị</strong><small>Thống kê, quản lý dữ liệu</small>
+            </button>
+
+            <!-- Extension -->
+            <button class="build-item" data-topic="code" data-prompt="Tạo một tiện ích mở rộng cho Chrome ">
+              <div class="bthumb">
+                <div class="win w-ext">
+                  <div class="bar"><i></i><i></i><i></i><span></span></div>
+                  <div class="ext-popup">
+                    <div class="ext-row"><span></span><b class="tg on"></b></div>
+                    <div class="ext-row"><span></span><b class="tg"></b></div>
+                    <div class="ext-row"><span></span><b class="tg on"></b></div>
+                    <span class="pill blue"></span>
+                  </div>
+                  <svg class="ext-puzzle" viewBox="0 0 24 24" width="22" height="22"><path fill="#6b7280" d="M10 3a2 2 0 0 1 4 0v1h4a1 1 0 0 1 1 1v4h-1a2 2 0 0 0 0 4h1v4a1 1 0 0 1-1 1h-4v-1a2 2 0 0 0-4 0v1H6a1 1 0 0 1-1-1v-4h1a2 2 0 0 0 0-4H5V5a1 1 0 0 1 1-1h4z"/></svg>
+                </div>
+              </div>
+              <strong>Tiện ích trình duyệt</strong><small>Chrome, Edge, Cốc Cốc</small>
+            </button>
+
+            <!-- Game -->
+            <button class="build-item" data-topic="code" data-prompt="Làm một game 2D ">
+              <div class="bthumb game">
+                <i class="cloud c1"></i><i class="cloud c2"></i>
+                <i class="hill"></i>
+                <i class="coin k1"></i><i class="coin k2"></i><i class="coin k3"></i>
+                <i class="block b1"></i><i class="block b2"></i>
+                <i class="hero"></i>
+                <i class="ground"></i>
+              </div>
+              <strong>Game</strong><small>Game 2D trên web, mobile</small>
+            </button>
+
+            <!-- API -->
+            <button class="build-item" data-topic="code" data-prompt="Xây dựng API backend ">
+              <div class="bthumb">
+                <div class="win w-term">
+                  <div class="bar dark"><i></i><i></i><i></i></div>
+                  <div class="term">
+                    <p><em class="k">GET</em> /api/users <em class="ok">200</em></p>
+                    <p><em class="k">POST</em> /api/orders <em class="ok">201</em></p>
+                    <p><em class="g">{</em> "id": <em class="n">42</em>, "status": <em class="s">"ok"</em> <em class="g">}</em></p>
+                    <p class="cursor">$ </p>
+                  </div>
+                </div>
+              </div>
+              <strong>API &amp; Backend</strong><small>Node.js, Python, cơ sở dữ liệu</small>
+            </button>
+          </div>
+         </div>
+        </div>
+        <div class="messages" id="messages"></div>
+      </section>
+
+      <footer class="composer-wrap">
+        <form class="composer" id="composer">
+          <div class="attach-chips" id="attachChips" hidden></div>
+          <button type="button" class="attach-btn" id="attachBtn" title="Đính kèm ảnh, PDF hoặc file (có thể kéo thả hoặc dán)">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5l-8.2 8.2a5 5 0 0 1-7-7l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.7 1.7 0 0 1-2.4-2.4l7.8-7.8"/></svg>
+          </button>
+          <input type="file" id="attachInput" multiple hidden />
+          <div class="topic-picker mode-picker" id="modePicker">
+            <button type="button" class="mode-btn" id="modeBtn" title="Chế độ làm việc" aria-haspopup="listbox" aria-expanded="false"></button>
+            <div class="topic-menu mode-menu" id="modeMenu" role="listbox"></div>
+          </div>
+          <div class="topic-picker" id="topicPicker">
+            <button type="button" class="topic-btn" id="topicBtn" aria-haspopup="listbox" aria-expanded="false"></button>
+            <div class="topic-menu" id="topicMenu" role="listbox"></div>
+          </div>
+          <div class="reason-picker" id="reasonPicker">
+            <button type="button" class="reason-btn" id="reasonBtn" title="Mức suy luận" aria-haspopup="dialog" aria-expanded="false"></button>
+            <div class="reason-panel" id="reasonPanel" role="dialog" aria-label="Chọn mức suy luận">
+              <div class="reason-head"><span>Nhanh hơn</span><span class="smart">Thông minh hơn</span></div>
+              <div class="reason-track" id="reasonTrack">
+                <div class="reason-fill"><div class="pixels" id="pixels"></div></div>
+                <div class="reason-ticks" id="reasonTicks"></div>
+                <input type="range" class="reason-range" id="reasonRange" min="0" max="4" step="1" value="1" aria-label="Mức suy luận" />
+                <div class="reason-thumb" aria-hidden="true"></div>
+              </div>
+              <div class="reason-rec"><span id="reasonRec">Khuyên dùng</span></div>
+              <div class="reason-info">
+                <div class="reason-info-top"><b id="reasonName"></b></div>
+                <small id="reasonDesc"></small>
+              </div>
+            </div>
+          </div>
+          <textarea id="input" rows="1" placeholder="Nhắn tin cho Vico AI..." autofocus></textarea>
+          <button type="button" class="mic-btn" id="micBtn" title="Nói để nhập (tiếng Việt)" hidden>
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          </button>
+          <button type="submit" class="send" id="sendBtn" title="Gửi" disabled>
+            <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </form>
+        <p class="note">Bạn đang trò chuyện với AI. Vico AI có thể mắc lỗi, hãy kiểm tra lại thông tin quan trọng. <a href="terms.html" target="_blank" rel="noopener">Điều khoản</a> · <a href="privacy.html" target="_blank" rel="noopener">Quyền riêng tư</a></p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Modal tạo dự án -->
+  <div class="modal" id="projectModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
+      <div class="modal-head">
+        <div class="modal-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h3.6l2 2.2h7.4A2.5 2.5 0 0 1 21 9.7v7.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/></svg></div>
+        <div>
+          <h3 id="projectModalTitle">Tạo dự án mới</h3>
+          <p>Vico AI sẽ ghi nhớ mục tiêu để trả lời sát với dự án của bạn hơn.</p>
+        </div>
+        <button class="icon-btn modal-x" id="projectClose" title="Đóng"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <form id="projectForm" class="modal-form">
+        <label>
+          <span>Tên dự án</span>
+          <input id="projName" maxlength="60" required placeholder="Ví dụ: Website quán cà phê Vico" autocomplete="off" />
+        </label>
+        <label>
+          <span>Mục tiêu chính</span>
+          <textarea id="projGoal" rows="4" maxlength="1000" required placeholder="Ví dụ: Làm website giới thiệu menu, cho khách đặt bàn online, phong cách ấm áp, chạy tốt trên điện thoại."></textarea>
+        </label>
+        <label>
+          <span>AI làm việc <em class="optional">(model dùng trong các đoạn chat của dự án)</em></span>
+          <select id="projModel"></select>
+        </label>
+        <div class="proj-docs">
+          <div class="proj-docs-head">
+            <span>Tài liệu tham khảo <em class="optional">(AI đọc trong mọi đoạn chat của dự án)</em></span>
+            <button type="button" class="btn-ghost sm" id="projDocAdd">+ Thêm file</button>
+            <input type="file" id="projDocInput" multiple hidden accept=".txt,.md,.csv,.json,.html,.htm,.css,.js,.ts,.jsx,.tsx,.py,.java,.c,.cpp,.cs,.go,.php,.rb,.sql,.xml,.yml,.yaml,.log" />
+          </div>
+          <div class="proj-doc-list" id="projDocList"></div>
+          <small class="proj-doc-hint" id="projDocHint"></small>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="projectCancel">Huỷ</button>
+          <button type="submit" class="btn-primary" id="projectSubmit">Tạo dự án</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal đăng nhập / tạo tài khoản -->
+  <div class="modal" id="authModal" hidden>
+    <div class="modal-card auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <button class="icon-btn auth-x" id="authClose" title="Đóng"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      <div class="auth-brand"><svg class="vico-mark" viewBox="0 0 64 64" aria-hidden="true"><path class="vm-r" d="M50 15 32 49"/><path class="vm-l" d="M14 15 32 49"/><path class="vm-s" d="M32 3.7Q33 11.7 39 12.7Q33 13.7 32 21.7Q31 13.7 25 12.7Q31 11.7 32 3.7Z"/></svg>Vico AI</div>
+      <h3 id="authTitle">Chào mừng trở lại</h3>
+      <p class="auth-sub" id="authSub">Đăng nhập để tiếp tục chat với Vico AI</p>
+
+      <div class="auth-tabs" role="tablist">
+        <button type="button" role="tab" data-tab="login">Đăng nhập</button>
+        <button type="button" role="tab" data-tab="signup">Tạo tài khoản</button>
+        <i class="auth-tab-ind"></i>
+      </div>
+
+      <div class="auth-gift" id="authGift">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5V20h14v-7.5M12 8.5V20M12 8.5S10.5 4 8 4.5 7 8.5 12 8.5zM12 8.5s1.5-4.5 4-4 1 4-4 4z"/></svg>
+        <span>Tài khoản mới được tặng <b id="giftBonus">1.000 credit</b> và <b id="giftDaily">300 credit</b> mỗi ngày</span>
+      </div>
+
+      <form id="loginForm" class="modal-form auth-form" novalidate>
+        <p class="form-err" data-err="_"></p>
+        <label>
+          <span>Email hoặc tên đăng nhập</span>
+          <input id="liLogin" name="login" autocomplete="username" />
+          <small class="field-err" data-err="login"></small>
+        </label>
+        <label>
+          <span>Mật khẩu</span>
+          <span class="pw-wrap">
+            <input id="liPassword" name="password" type="password" autocomplete="current-password" />
+            <button type="button" class="pw-eye" title="Hiện mật khẩu" aria-label="Hiện mật khẩu"></button>
+          </span>
+          <small class="field-err" data-err="password"></small>
+        </label>
+        <button type="submit" class="btn-primary block">Đăng nhập</button>
+        <p class="auth-switch">Chưa có tài khoản? <button type="button" data-tab="signup">Tạo tài khoản</button></p>
+      </form>
+
+      <form id="signupForm" class="modal-form auth-form" novalidate hidden>
+        <p class="form-err" data-err="_"></p>
+        <label>
+          <span>Tên đăng nhập</span>
+          <input id="suUsername" name="username" autocomplete="username" maxlength="20" placeholder="vd: vico_user" />
+          <small class="field-err" data-err="username"></small>
+        </label>
+        <label>
+          <span>Email</span>
+          <input id="suEmail" name="email" type="email" autocomplete="email" placeholder="ban@email.com" />
+          <small class="field-err" data-err="email"></small>
+        </label>
+        <label>
+          <span>Mật khẩu</span>
+          <span class="pw-wrap">
+            <input id="suPassword" name="password" type="password" autocomplete="new-password" placeholder="Ít nhất 8 ký tự" />
+            <button type="button" class="pw-eye" title="Hiện mật khẩu" aria-label="Hiện mật khẩu"></button>
+          </span>
+          <span class="pw-meter" id="pwMeter"><i></i><i></i><i></i><i></i></span>
+          <small class="field-err" data-err="password"></small>
+        </label>
+        <label>
+          <span>Mã giới thiệu <em class="optional">(không bắt buộc)</em></span>
+          <input id="suRefCode" name="refCode" maxlength="12" placeholder="Có mã của bạn bè thì nhập để cả hai được tặng credit" autocomplete="off" />
+          <small class="field-err" data-err="refCode"></small>
+        </label>
+        <label class="consent-box">
+          <input type="checkbox" id="suConsent" name="consent" />
+          <span>Tôi đã đọc và đồng ý <a href="terms.html" target="_blank" rel="noopener">Điều khoản sử dụng</a> và <a href="privacy.html" target="_blank" rel="noopener">Chính sách quyền riêng tư</a>; xác nhận tôi đủ <b data-min-age>16</b> tuổi (hoặc đã được cha mẹ / người giám hộ đồng ý); đồng ý để tin nhắn được xử lý bởi đối tác cung cấp AI, có thể đặt máy chủ ở nước ngoài.</span>
+        </label>
+        <small class="field-err" data-err="consent"></small>
+        <button type="submit" class="btn-primary block">Tạo tài khoản</button>
+        <p class="auth-switch">Đã có tài khoản? <button type="button" data-tab="login">Đăng nhập</button></p>
+      </form>
+
+      <p class="auth-note"><a href="terms.html" target="_blank" rel="noopener">Điều khoản sử dụng</a> · <a href="privacy.html" target="_blank" rel="noopener">Quyền riêng tư</a></p>
+    </div>
+  </div>
+
+  <!-- Group AI (chỉ có trên bản desktop) -->
+  <div class="modal" id="groupModal" hidden>
+    <div class="modal-card group-card" role="dialog" aria-modal="true" aria-labelledby="groupTitle">
+      <button class="icon-btn auth-x" data-close title="Đóng"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      <div class="group-hero">
+        <div class="group-avatars" id="groupAvatars"></div>
+        <span class="desk-badge">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+          Chỉ có trên bản desktop
+        </span>
+      </div>
+      <h3 id="groupTitle">Group AI</h3>
+      <p class="group-desc">Tổng hợp nhiều AI vào 1 group chat, khi bạn giao việc cho 1 AI thì các AI khác cũng làm theo, mỗi AI sẽ đóng vai 1 chức vụ giống như team của bạn, các AI có thể tự chat với nhau để sửa lỗi của nhau.</p>
+      <div class="group-chat" id="groupChat" aria-label="Ví dụ một group chat"></div>
+      <div class="modal-actions group-actions">
+        <button type="button" class="btn-ghost" data-close>Để sau</button>
+        <button type="button" class="btn-primary with-ico" data-open="desktop">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg>
+          Tải bản desktop để dùng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tải bản desktop -->
+  <div class="modal" id="desktopModal" hidden>
+    <div class="modal-card desk-card" role="dialog" aria-modal="true" aria-labelledby="deskTitle">
+      <button class="icon-btn auth-x" data-close title="Đóng"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+
+      <!-- Ảnh minh hoạ: giao diện giống bản web, thêm khung thư mục và terminal -->
+      <div class="desk-preview" aria-hidden="true">
+        <div class="dp-window">
+          <div class="dp-titlebar"><span class="dp-title">Vico AI</span><span class="dp-ctrl"><i></i><i></i><i class="x"></i></span></div>
+          <div class="dp-body">
+            <div class="dp-rail"><i></i><i></i><i></i><i></i></div>
+            <div class="dp-files">
+              <b>Thư mục</b>
+              <span class="f dir">quan-ca-phe</span>
+              <span class="f sub">index.html</span>
+              <span class="f sub on">style.css</span>
+              <span class="f sub">app.js</span>
+            </div>
+            <div class="dp-main">
+              <div class="dp-chat">
+                <span class="dp-msg me">Sửa lỗi nút đặt bàn giúp mình</span>
+                <span class="dp-msg ai">Đã sửa <em>app.js</em> và chạy thử, mọi thứ ổn.</span>
+              </div>
+              <div class="dp-term">
+                <b>Terminal</b>
+                <code><em>$</em> npm run dev</code>
+                <code class="ok">✓ Sẵn sàng tại localhost:3000</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="desk-info">
+        <span class="desk-kicker">Vico AI cho máy tính <span id="deskVersion"></span><span class="soon" id="deskSoon" hidden>Sắp ra mắt</span></span>
+        <h3 id="deskTitle">Tải Vico AI bản desktop</h3>
+        <p class="desk-sub">Giao diện giống bản web, chỉ thay đổi một chút, nhưng có thêm nhiều tính năng mở rộng.</p>
+        <ul class="desk-features">
+          <li>
+            <span class="df-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19.5c.8-3.3 3.2-5.2 6-5.2s5.2 1.9 6 5.2"/><circle cx="17" cy="9" r="2.6"/><path d="M15.6 14.4c2.6-.3 4.7 1.3 5.4 4.4"/></svg></span>
+            <span><b>Group AI</b><small>Nhiều AI trong một group chat, làm việc như một team</small></span>
+          </li>
+          <li>
+            <span class="df-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M12.5 15H17"/></svg></span>
+            <span><b>Truy cập terminal</b><small>AI chạy lệnh, cài đặt và build dự án ngay trên máy, có hỏi bạn trước khi chạy</small></span>
+          </li>
+          <li>
+            <span class="df-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h3.6l2 2.2h7.4A2.5 2.5 0 0 1 21 9.7v7.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/></svg></span>
+            <span><b>Truy cập thư mục</b><small>AI đọc và sửa file trong thư mục bạn cho phép</small></span>
+          </li>
+        </ul>
+        <div class="desk-dl">
+          <a class="btn-primary dl-main with-ico" id="dlMain" href="#">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg>
+            <span id="dlMainLabel">Tải cho Windows</span>
+          </a>
+          <div class="dl-others" id="dlOthers"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Xem trước file AI gửi -->
+  <div class="modal" id="fileModal" hidden>
+    <div class="modal-card fv-card" role="dialog" aria-modal="true" aria-labelledby="fvName">
+      <header class="fv-head">
+        <span class="file-icon sm"><i id="fvBadge"></i></span>
+        <div class="fv-title"><b id="fvName"></b><small id="fvMeta"></small></div>
+        <div class="fv-vers" id="fvVers" hidden>
+          <button type="button" class="icon-btn" id="fvPrev" title="Bản trước"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <span id="fvVerLabel"></span>
+          <button type="button" class="icon-btn" id="fvNext" title="Bản sau"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="fv-editbar" id="fvEditBar" hidden>
+          <button type="button" class="btn-ghost sm" id="fvEditCancel">Huỷ</button>
+          <button type="button" class="btn-primary sm" id="fvEditSave">Lưu bản sửa</button>
+        </div>
+        <button class="icon-btn" id="fvEdit" title="Sửa nội dung file">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        </button>
+        <div class="fv-tabs" id="fvTabs" hidden>
+          <button type="button" data-tab="code" class="on">Code</button>
+          <button type="button" data-tab="preview">Xem trang</button>
+        </div>
+        <button class="icon-btn" id="fvCopy" title="Sao chép nội dung">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+        </button>
+        <button class="btn-primary sm with-ico" id="fvDownload">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg>
+          Tải xuống
+        </button>
+        <button class="icon-btn" data-close title="Đóng"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </header>
+      <pre class="fv-code" id="fvCode"></pre>
+      <textarea class="fv-editor" id="fvEditor" spellcheck="false" aria-label="Sửa nội dung file" hidden></textarea>
+      <iframe class="fv-frame" id="fvFrame" sandbox="allow-scripts" title="Xem trước trang" hidden></iframe>
+    </div>
+  </div>
+
+  <!-- Cài đặt -->
+  <div class="modal" id="settingsModal" hidden>
+    <div class="modal-card st-card" role="dialog" aria-modal="true" aria-labelledby="stTitle">
+      <nav class="st-nav" role="tablist" aria-label="Mục cài đặt">
+        <h3 id="stTitle">Cài đặt</h3>
+        <button type="button" role="tab" data-st="general">Chung</button>
+        <button type="button" role="tab" data-st="personal">Cá nhân hoá</button>
+        <button type="button" role="tab" data-st="credit">Credit</button>
+        <button type="button" role="tab" data-st="data">Dữ liệu</button>
+      </nav>
+      <div class="st-body" id="stBody"></div>
+      <button class="icon-btn st-x" data-close title="Đóng"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    </div>
+  </div>
+
+  <!-- Xem ảnh / PDF đính kèm -->
+  <div class="modal lightbox" id="lightbox" hidden>
+    <button class="icon-btn lb-x" data-close title="Đóng"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <div class="lb-stage" id="lbStage"></div>
+    <div class="lb-bar"><span id="lbName"></span><button class="btn-primary sm with-ico" id="lbDownload">Tải xuống</button></div>
+  </div>
+
+  <!-- Thả file vào để đính kèm -->
+  <div class="drop-overlay" id="dropOverlay" hidden><div>Thả file vào đây để đính kèm<small>Ảnh, PDF, file văn bản hoặc code</small></div></div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="vendor/highlight/highlight.min.js"></script>
+  <script src="vendor/highlight/powershell.min.js"></script>
+  <script src="vendor/highlight/dos.min.js"></script>
+  <script src="vendor/katex/katex.min.js"></script>
+  <script src="config.js"></script>
+  <script src="pow.js"></script>
+  <script src="auth.js"></script>
+  <script src="db.js"></script>
+  <script src="markdown.js"></script>
+  <script src="app.js"></script>
+  <script src="features.js"></script>
+  <script src="pro.js"></script>
+  <script src="cloud.js"></script>
+  <script src="local-prompts.js"></script>
+  <script src="desktop.js"></script>
+  <script src="finetune.js"></script>
+  <script src="group-intro.js"></script>
+  <script src="chat-intro.js"></script>
+</body>
+</html>
