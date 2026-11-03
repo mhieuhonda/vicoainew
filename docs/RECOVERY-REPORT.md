@@ -65,7 +65,14 @@ Thực hiện trên bản trích xuất, **không thực thi bất kỳ artifact
 
 ## 6. Việc còn thiếu cần làm để phát triển tiếp
 
-1. **Source Rust `vico-agent`**: binary này không thể dịch ngược trung thực về Rust. Nếu còn máy từng build agent (dấu vết trong binary: máy `C:\Users\VPPN\.cargo`), hãy tìm lại thư mục dự án Rust; nếu không, phải viết lại từ đặc tả: HTTP server `127.0.0.1:7878`, API đọc/sửa/tạo file, chạy lệnh, git, trả diff để hoàn tác (xem cách gọi trong `app/coding.js`).
+1. **Source Rust `vico-agent`** — ĐÃ XỬ LÝ PHẦN LỚN (cập nhật 2026-11-03): binary đã
+   strip symbol nên thân hàm không thể dịch ngược, nhưng khai thác tĩnh đã trích ra:
+   12 module gốc, 75 crate + phiên bản chính xác, 22 route API, tên toàn bộ struct,
+   system prompt, tool set, cơ chế worktree multi-agent và CDP browser automation.
+   Khung dự án tái tạo nằm tại `agent-rust/` (Cargo.toml biên dịch được + 12 module
+   khớp tên gốc, thân hàm `todo!()` cần viết theo đặc tả
+   `agent-rust/docs/AGENT-FORENSICS.md`). Nếu còn máy từng build agent
+   (`C:\Users\VPPN\.cargo`) hãy tìm lại thư mục dự án Rust để lấy 100% source gốc.
 2. **Dựng lại cấu hình electron-builder** (không có trong asar): `appId`, `productName: "Vico AI"`, target NSIS, icon từ `build/icon.png`, và bundle `vico-agent.exe` vào `resources/` + `asarUnpack` cho `node-llama-cpp`.
 3. **Sinh lại `package-lock.json`**: chạy `npm install` rồi commit lockfile để khóa cây phụ thuộc.
 4. **Xoay vòng mọi secret hạ tầng** (đã lộ rủi ro khi bị chiếm máy chủ): khóa API nhà cung cấp LLM, mật khẩu CSDL, secret JWT nếu backend cloud còn dùng secret sinh ra trước sự cố.

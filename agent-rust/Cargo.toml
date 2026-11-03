@@ -1,0 +1,83 @@
+# ============================================================================
+# Vico Agent — Cargo.toml TÁI TẠO (reconstruction)
+# Khôi phục từ phân tích tĩnh vico-agent.exe (SHA-256 8b97e884…, build 2026-10-30):
+# mọi crate + phiên bản bên dưới là CHÍNH XÁC, trích từ chuỗi
+# `index.crates.io-1949cf8c6b5b557f\<crate>-<phiên-bản>` nhúng trong binary.
+# Thân hàm gốc KHÔNG thể khôi phục (binary đã strip symbol) — xem docs/AGENT-FORENSICS.md
+# ============================================================================
+[package]
+name = "vico-agent"
+version = "0.1.0"
+edition = "2021"
+description = "Vico Coding Agent — agent lập trình tự chủ chạy local cho Vico AI Desktop"
+authors = ["Vico AI"]
+
+[[bin]]
+name = "vico-agent"
+path = "src/main.rs"
+
+[dependencies]
+# --- Async runtime & HTTP server (bind 127.0.0.1:7878) ---
+tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "process", "fs", "io-util", "sync", "time", "net", "signal"] }
+axum = "0.8.9"                       # router: /sessions, /messages, /events (SSE), /tools...
+axum-core = "0.5.6"
+tower = "0.5.3"
+tower-http = { version = "0.6.11", features = ["cors"] }
+hyper = "1.12.0"
+hyper-util = { version = "0.1.21", features = ["tokio"] }
+http = "1.5.0"
+http-body-util = "0.1.5"
+httparse = "1.10.1"
+socket2 = "0.6.5"
+
+# --- HTTP client (gọi LLM OpenAI-compatible: {base_url}/chat/completions) ---
+reqwest = { version = "0.12.28", default-features = false, features = ["json", "stream", "blocking"] }
+hyper-tls = "0.6.0"
+tokio-native-tls = "0.3.1"
+
+# --- WebSocket (CDP browser automation + kênh event của IDE) ---
+tokio-tungstenite = "0.26.2"
+
+# --- Tuần tự hoá ---
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+
+# --- File / diff / tìm kiếm ---
+similar = "2.7.0"                    # diff cho checkpoint + undo
+walkdir = "2.5.0"
+ignore = "0.4.33"                    # tôn trọng .gitignore khi walk
+globset = "0.4.20"
+regex = "1.13.1"
+memchr = "2.8.3"
+aho-corasick = "1.1.5"
+
+# --- Ảnh (screenshot browser qua CDP) ---
+image = "0.25.10"
+png = "0.18.1"
+flate2 = "1.1.10"
+
+# --- Tiện ích ---
+uuid = { version = "1.29.0", features = ["v4"] }
+chrono = "0.4.45"
+rand = "0.8.8"
+base64 = "0.22.1"
+data-encoding = "2.11.1"
+url = "2.5.8"
+mime = "0.3.17"
+bytes = "1.12.1"
+futures-util = "0.3.34"
+parking_lot = "0.12.5"
+once_cell = "1.21.4"
+lazy_static = "1.5.1"
+percent-encoding = "2.3.2"
+smallvec = "1.16.4"
+
+# --- Logging (tracing stack) ---
+tracing = "0.1"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "fmt"] }
+
+[profile.release]
+# Binary gốc 8.516.608 bytes, đã strip symbol table
+strip = true
+lto = true
+codegen-units = 1

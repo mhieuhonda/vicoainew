@@ -31,6 +31,11 @@
 ├── build/               # Icon ứng dụng (icon.png, tray.png)
 ├── binaries/
 │   └── vico-agent.exe   # Agent coding (Rust) — binary tham chiếu, xem docs/
+├── agent-rust/          # KHUNG TÁI TẠO agent Rust từ forensic binary
+│   ├── Cargo.toml       # 75 crate + phiên bản CHÍNH XÁC trích từ binary
+│   ├── src/             # 12 module khớp tên gốc: main, api, agent, tools, policy,
+│   │                    # store, team, autonomous, mcp, web, rt, ide
+│   └── docs/AGENT-FORENSICS.md  # Bằng chứng: 22 route, struct, system prompt, CDP
 └── docs/
     ├── RECOVERY-REPORT.md          # Báo cáo khôi phục đầy đủ
     └── original-package.asar.json  # package.json nguyên bản từ asar (chưa chỉnh sửa)

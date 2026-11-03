@@ -1,5 +1,10 @@
 # binaries/vico-agent.exe — binary tham chiếu
 
+> **Cập nhật 2026-11-03:** binary đã được khai thác tĩnh triệt để — xem
+> [`agent-rust/docs/AGENT-FORENSICS.md`](../agent-rust/docs/AGENT-FORENSICS.md)
+> và khung dự án tái tạo tại [`agent-rust/`](../agent-rust/) (Cargo.toml với 75 crate
+> đúng phiên bản + 12 module khớp tên gốc + system prompt + 22 route API).
+
 - Loại: `PE32+ executable for MS Windows 6.00 (console), x86-64, 6 sections`
 - Kích thước: 8.516.608 bytes
 - Nguồn: `resources/vico-agent.exe` bên trong `app-64.7z` của `VicoAI-Setup-1.0.0.exe`
