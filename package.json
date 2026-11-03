@@ -1,0 +1,22 @@
+{
+  "name": "vico-ai",
+  "productName": "Vico AI",
+  "version": "1.0.0",
+  "description": "Vico AI cho máy tính: chat AI, Group AI, truy cập terminal và thư mục",
+  "author": "Vico AI",
+  "main": "main.js",
+  "private": true,
+  "vicoUpdateUrl": "",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.133.0",
+    "electron-updater": "6.8.10",
+    "node-llama-cpp": "3.22.1",
+    "openai": "7.33.0"
+  },
+  "devDependencies": {
+    "electron": "44.7.0"
+  }
+}
